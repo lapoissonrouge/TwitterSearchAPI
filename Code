@@ -1,0 +1,32 @@
+import requests
+import json
+import tweepy
+import time
+import csv
+from tweepy import OAuthHandler
+from tweepy import API
+from tweepy import cursor
+
+consumer_key          = 'xxxxxxxxx'
+consumer_secret       = 'xxxxxxxxx'
+access_token          = 'xxxxxxxxx'
+access_token_secret   = 'xxxxxxxxx'
+
+auth = OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+
+api = tweepy.API(auth, wait_on_rate_limit=True)
+
+csvFile = open('FILE_NAME_DATE.csv', 'a')
+csvWriter = csv.writer(csvFile)
+
+query = "x"
+
+for i, status in enumerate(tweepy.Cursor(api.search, q=query).items(1000000)):
+    csvWriter.writerow([status.created_at, status.author.screen_name, status.author.name, status.author.location, status.favorite_count, 
+                        status.retweet_count, status.place, status.geo, status.coordinates, status.author.followers_count, status.author.friends_count, 
+                        status.author.description, status.author.created_at, status.is_quote_status, status.text.encode('utf-8')])
+    
+    print(i, status.created_at, status.author.screen_name, status.author.name, status.text, status.author.location, status.author.description, status.author.followers_count, status.author.friends_count, status.favorite_count, status.retweet_count, status.place, status.geo, status.coordinates)    
+
+csvFile.close()
